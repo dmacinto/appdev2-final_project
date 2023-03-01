@@ -1,39 +1,62 @@
 import React from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import SignIn from "../SignIn/SignIn";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { axiosInstance } from "../../utils";
 
-export default function Navigation() {
-    const [user, setUser] = React.useState(null);
+function SignIn({ setUser }) {
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
 
-    async function saveUser(value) {
+    async function signInRequest() {
         try {
-          const jsonValue = JSON.stringify(value);
-          await AsyncStorage.setItem("@user", jsonValue);
-        } catch (e) {
-          console.log("error storing user", e);
-        }
-    };
-    
-    async function loadUser() {
-        try {
-            const value = await AsyncStorage.getItem("@user");
-            if (value !== null) {
-                setUser(JSON.parse(value));
+            const apiEndPoint = "/users/sign_in.json"
+
+            const body = {
+                user: {
+                    email: email,
+                    password: password
+                }
             }
-        } catch (e) {
-            console.log("error loading user", e);
-        }
-    };
 
-    React.useEffect(() => {
-        loadUser();
-    }, []);
-    
-    React.useEffect(() => {
-        saveUser(user);
-    }, [user]);
+            const response = await axiosInstance.post(apiEndPoint, body);
+
+            setUser(response.data);
+        } catch (error) {
+            console.error(error.toJSON());
+        }
+    }
 
     return (
-        user ? <HomeScreen /> : <SignIn setUser={setUser} />
-    );
+        <View>
+            <Text>Sign In!</Text>
+            <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={(change) => setEmail(change)}
+                keyboardType={"email-address"}
+                placeholder={"Email"}
+            />
+            <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={(change) => setPassword(change)}
+                secureTextEntry={true}
+                placeholder={"Password"}
+            />
+            <Button
+                title="Sign In"
+                onPress={signInRequest}
+            />
+        </View>
+    )
 }
+
+const styles = StyleSheet.create({
+    input: {
+      height: 40,
+      margin: 12,
+      borderWidth: 1,
+      padding: 10,
+    },
+  });
+
+export default SignIn; 

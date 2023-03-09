@@ -2,8 +2,7 @@ import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SignIn from "../SignIn/SignIn";
 import { Text, View } from 'react-native';
-
-
+import TaskFeed from "../TaskFeed/TaskFeed";
  
 function HomeScreen() {
     return (
@@ -12,9 +11,6 @@ function HomeScreen() {
         </View>
     )
 };
-
-
-
 
 
 export default function Navigation() {
@@ -49,6 +45,6 @@ export default function Navigation() {
     }, [user]);
 
     return (
-        user ? <HomeScreen /> : <SignIn setUser={setUser} />
+        user ? <TaskFeed /> : <SignIn setUser={setUser} />
     );
 }

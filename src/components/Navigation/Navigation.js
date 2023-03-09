@@ -12,7 +12,6 @@ function HomeScreen() {
     )
 };
 
-
 export default function Navigation() {
     const [user, setUser] = React.useState(null);
 
@@ -45,6 +44,6 @@ export default function Navigation() {
     }, [user]);
 
     return (
-        user ? <TaskFeed /> : <SignIn setUser={setUser} />
+        user ? <TaskFeed user={user} /> : <SignIn setUser={setUser} />
     );
 }

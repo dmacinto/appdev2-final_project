@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { axiosInstance } from "../../utils";
  
 
@@ -11,8 +11,6 @@ function Task({ task }) {
     )
 }
 
-
-
 function TaskFeed({ user }) {
     const [tasks, setTasks] = React.useState([]);
 
@@ -22,10 +20,9 @@ function TaskFeed({ user }) {
         )
     }
 
-
     async function getFeed() {
         try {
-            const apiEndPoint = `/alice/feed.json?user_email=alice@example.com&user_token=wjrggLdTnBDsw1hJw3EU`
+            const apiEndPoint = `/${user.username}/feed.json?user_email=${user.email}&user_token=${user.authentication_token}`
             const response = await axiosInstance.get(apiEndPoint)
             setTasks(response.data);
         } catch(error) {
@@ -39,7 +36,6 @@ function TaskFeed({ user }) {
 
     return (
         <View>
-
             <FlatList
                 data={tasks}
                 renderItem={({item}) => <Task task={item} />}
@@ -47,8 +43,6 @@ function TaskFeed({ user }) {
                 contentContainerStyle={styles.contentContainer}
                 ListHeaderComponent={ListHeader}
             />
-
-
         </View>
     )
 }
@@ -59,7 +53,8 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     contentContainer: {
-        padding: 12
+        paddingTop: 80,
+        paddingHorizontal: 20
     }
 })
 

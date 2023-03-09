@@ -1,5 +1,7 @@
 import React from "react";
-import { ScrollView, View, Text } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { axiosInstance } from "../../utils";
+ 
 
 function Task({ task }) {
     return (
@@ -9,12 +11,21 @@ function Task({ task }) {
     )
 }
 
+
+
 function TaskFeed({ user }) {
     const [tasks, setTasks] = React.useState([]);
 
+    function ListHeader() {
+        return (
+            <Text style={styles.title}>Feed</Text>
+        )
+    }
+
+
     async function getFeed() {
         try {
-            const apiEndPoint = `/${user.username}/feed.json?user_email=${user.email}&user_token=${user.authentication_token}`
+            const apiEndPoint = `/alice/feed.json?user_email=alice@example.com&user_token=wjrggLdTnBDsw1hJw3EU`
             const response = await axiosInstance.get(apiEndPoint)
             setTasks(response.data);
         } catch(error) {
@@ -28,18 +39,29 @@ function TaskFeed({ user }) {
 
     return (
         <View>
-            <Text>Feed</Text>
-			<ScrollView>
-            {
-                tasks?.map((task) => {
-                    return (
-                        <Task task={task} key={task.id} />
-                    )
-                })
-            }
-		    </ScrollView>
+
+            <FlatList
+                data={tasks}
+                renderItem={({item}) => <Task task={item} />}
+                keyExtractor={item => item.id}
+                contentContainerStyle={styles.contentContainer}
+                ListHeaderComponent={ListHeader}
+            />
+
+
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    title: {
+        fontSize: 28, 
+        fontWeight: '600'
+    },
+    contentContainer: {
+        padding: 12
+    }
+})
+
 
 export default TaskFeed;

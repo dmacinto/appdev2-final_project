@@ -1,16 +1,10 @@
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SignIn from "../SignIn/SignIn";
+import SignOut from "../SignOut/SignOut";
 import { Text, View } from 'react-native';
 import TaskFeed from "../TaskFeed/TaskFeed";
  
-function HomeScreen() {
-    return (
-        <View>
-            <Text>Home screen</Text>
-        </View>
-    )
-};
 
 export default function Navigation() {
     const [user, setUser] = React.useState(null);

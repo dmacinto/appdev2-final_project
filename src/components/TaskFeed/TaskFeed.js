@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button, TextInput } from "react-native";
 import { axiosInstance } from "../../utils";
- 
+import SignOut from "../SignOut/SignOut";
+import CreateTask from "../CreateTask/CreateTask";
+
 
 function Task({ task }) {
     return (
@@ -10,6 +12,9 @@ function Task({ task }) {
         </View>
     )
 }
+
+
+
 
 function TaskFeed({ user }) {
     const [tasks, setTasks] = React.useState([]);
@@ -42,7 +47,28 @@ function TaskFeed({ user }) {
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.contentContainer}
                 ListHeaderComponent={ListHeader}
+                
             />
+
+
+            <Button
+                title="Create Task"
+                onPress={CreateTask}
+            />
+
+            <Button
+                title="Delete Task"
+            />
+
+            <Button
+                title="Edit Task"
+            />
+
+            <Button
+                title="Sign Out"
+                onPress={SignOut}
+            />
+
         </View>
     )
 }
@@ -50,12 +76,20 @@ function TaskFeed({ user }) {
 const styles = StyleSheet.create({
     title: {
         fontSize: 28, 
-        fontWeight: '600'
+        fontWeight: '600',
+        textAlign: 'center'
     },
     contentContainer: {
         paddingTop: 80,
         paddingHorizontal: 20
-    }
+    },
+    input: {
+        height: 40,
+        marginTop: 12,
+        marginBottom: 12,
+        borderWidth: 1,
+        padding: 10,
+      }
 })
 
 

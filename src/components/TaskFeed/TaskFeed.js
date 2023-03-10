@@ -136,33 +136,65 @@ function TaskFeed({ user }) {
     }
 
 
-
-
-
+    async function deleteTask(task) {
+        try{
+            const apiEndPoint =`/tasks/${task.id}.json`;
+            const body = {
+                user: {
+                    body: inputText,
+                    status: task.status
+                }
+            }
+            const response = await axiosInstance.delete(apiEndPoint, body);
+            //console.log(response.data)
+            const newTasks = tasks.map(
+                task 
+            )
+            setTasks(newTasks)
+        }
+        catch (error) {
+            console.error(error.toJSON());
+        }
     
+    } 
+
+
+
     const onPressDeleteEdit = () => {
         handleDeleteTask(editTask);
         setisModalVisible(false);
     }
 
-    const handleAddTask = async () => {
-        try {
-            const apiEndPoint = "/tasks/new.json"
-            const body = {
+
+    async function addTask(task) {
+        try{
+            const apiEndPoint =`/tasks.json?user_email=${user.email}&user_token=${user.authentication_token}`;
+            const apiSend = {
                 task: {
                     body: inputText
                 }
             }
-            await axiosInstance.post(apiEndPoint, body);
-            return task;
-        } catch (error) {
+            const response = await axiosInstance.post(apiEndPoint, apiSend);
+            console.log(response.data)
+            const newTasks = tasks.map(
+                task => task.id === response.data.id ? 
+                //if the id matches then replace the task 
+                response.data
+                :
+                //if id doesnt match then return the task
+                task
+            )
+            setTasks(newTasks)
+        }
+        catch (error) {
             console.error(error.toJSON());
         }
-    }
+    
+    } 
 
 
     const onPressAddEdit = () => {
-        handleAddTask(editTask);
+        addTask(editTask);
         setisModalVisible(false);
     }
 

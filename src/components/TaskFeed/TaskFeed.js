@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity, Modal } from "react-native";
 import { axiosInstance } from "../../utils";
-import SignOut from "../SignOut/SignOut";
 import CreateTask from "../CreateTask/CreateTask";
 import { TextInput } from "react-native-gesture-handler";
+import SignIn from "../SignIn/SignIn";
 
 
 
@@ -11,6 +11,7 @@ function Task({ task }) {
     return (
         <View>
             <Text>{task.body}</Text>
+            <Text>{task.status}</Text>
         </View>
     )
 }
@@ -48,7 +49,7 @@ function TaskFeed({ user }) {
         }
     }
 
-    const renderItem = ({item, index}) => {
+    const renderItem = ({item}) => {
         return(
             <TouchableOpacity
                 style={styles.item}
@@ -62,9 +63,21 @@ function TaskFeed({ user }) {
     const handleEditTask = (editTask) => {
         const changeData = tasks.map(async task => {
             if (task.id == editTask) {
-                task.body = inputText;
-                //task.status = task.status;
-                await axiosInstance.patch(`/tasks/${task.id}/edit.json`, task.body);
+
+                const body = {
+                    user: {
+                        id: task.id,
+                        body: inputText,
+                        commenter_id: task.commenter_id,
+                        completed_id: null,
+                        in_progress_id: null,
+                        incomplete_id: null,
+                        status: task.status,
+                        created_at: task.created_at,
+                        updated_at: task.updated_at,
+                    }
+                }
+                await axiosInstance.patch(`/tasks/${task.id}/edit.json`, user);
                 return task;
             }
             return task;
@@ -148,7 +161,6 @@ function TaskFeed({ user }) {
 
             <Button
                 title="Sign Out"
-                onPress={SignOut}
             />
 
         </View>

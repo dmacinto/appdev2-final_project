@@ -14,8 +14,6 @@ function Task({ task }) {
     )
 }
 
-
-
 function TaskFeed({ user }) {
     const [tasks, setTasks] = React.useState([]);
     const [isRender, setisRender] = React.useState(false);
@@ -64,6 +62,7 @@ function TaskFeed({ user }) {
         )
     }
 
+
     const handleEditTask = (editTask) => {
         const changeData = tasks.map(async task => {
             if (task.id == editTask) {
@@ -74,7 +73,7 @@ function TaskFeed({ user }) {
                         status: task.status
                     }
                 }
-                await axiosInstance.patch(`/tasks/${task.id}.json`, apiSend);
+                await axiosInstance.patch(`/tasks/${task.id}.json?user_email=${user.email}&user_token=${user.authentication_token}`, apiSend);
                 return task;
             }
             return task;
@@ -83,11 +82,38 @@ function TaskFeed({ user }) {
         setisRender(!isRender);
     }
 
+
+
+
+    async function updateTask(task) {
+        try{
+            const apiEndPoint =`/tasks/${editTask}.json?user_email=${user.email}&user_token=${user.authentication_token}`;
+            const apiSend = {
+                task: {
+                    body: inputText
+                }
+            }
+            const response = await axiosInstance.patch(apiEndPoint, apiSend);
+            console.log(response.data)
+            const newTasks = tasks.map(
+                task => task.id === response.data.id ? 
+                //if the id matches then replace the task 
+                response.data
+                :
+                //if id doesnt match then return the task
+                task
+            )
+            setTasks(newTasks)
+        }
+        catch (error) {
+            console.error(error.toJSON());
+        }
+    
+    } 
     const onPressSaveEdit = () => {
-        handleEditTask(editTask);
+        updateTask(editTask);
         setisModalVisible(false);
     }
-
 
     const handleDeleteTask = (editTask) => {
         const changeData = tasks.map(async task => {
@@ -96,9 +122,7 @@ function TaskFeed({ user }) {
                 const body = {
                     user: {
                         body: inputText,
-                        status: task.status//,
-                        //commit: "Update Task",
-                        //id: task.id
+                        status: task.status
                     }
                 }
             
@@ -111,12 +135,15 @@ function TaskFeed({ user }) {
         setisRender(!isRender);
     }
 
+
+
+
+
+    
     const onPressDeleteEdit = () => {
         handleDeleteTask(editTask);
         setisModalVisible(false);
     }
-
-
 
     const handleAddTask = async () => {
         try {
@@ -139,12 +166,6 @@ function TaskFeed({ user }) {
         setisModalVisible(false);
     }
 
-
-
-
-
-
-
     React.useEffect(() => {
         getFeed()
     }, [])
@@ -153,7 +174,7 @@ function TaskFeed({ user }) {
         <View>
             <FlatList
                 data={tasks}
-                renderItem={renderItem }
+                renderItem={renderItem}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.contentContainer}
                 ListHeaderComponent={ListHeader}
@@ -206,7 +227,6 @@ function TaskFeed({ user }) {
              </View>
             </Modal>
 
-
             <View>
 
              <TextInput
@@ -218,12 +238,10 @@ function TaskFeed({ user }) {
                 />
                 <Button
                 title="Create Task"
-                //onPress={onPressAddEdit()}
+                onPress={onPressAddEdit}
               />
 
             </View>
-
-
 
         </View>
     )

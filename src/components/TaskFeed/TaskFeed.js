@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity, Modal } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity, Modal, Dropdown } from "react-native";
 import { axiosInstance } from "../../utils";
 import { TextInput } from "react-native-gesture-handler";
 
@@ -23,6 +23,12 @@ function TaskFeed({ user }) {
     const [inputText, setinputText] = React.useState();
     const [editTask, seteditTask] = React.useState();
     
+    const statusData = [
+        { label: 'Uncompleted', value: 'uncompleted' },
+        { label: 'In-Progress', value: 'in_progress' },
+        { label: 'Completed', value: 'completed' }
+    ];
+
     
     const onPressTask = (task) => {
         setisModalVisible(true);
@@ -62,13 +68,13 @@ function TaskFeed({ user }) {
         const changeData = tasks.map(async task => {
             if (task.id == editTask) {
 
-                const body = {
-                    user: {
+                const apiSend = {
+                    task: {
                         body: inputText,
                         status: task.status
                     }
                 }
-                await axiosInstance.patch(`/tasks/${task.id}.json`, body);
+                await axiosInstance.patch(`/tasks/${task.id}.json`, apiSend);
                 return task;
             }
             return task;
@@ -95,6 +101,7 @@ function TaskFeed({ user }) {
                         //id: task.id
                     }
                 }
+            
                 await axiosInstance.delete(`/tasks/${task.id}.json`, body);
                 return task;
             }
@@ -111,31 +118,26 @@ function TaskFeed({ user }) {
 
 
 
-   // const handleAddTask = (editTask) => {
-    //    const changeData = tasks.map(async task => {
-     //       if (task.id == editTask) {
+    const handleAddTask = async () => {
+        try {
+            const apiEndPoint = "/tasks/new.json"
+            const body = {
+                task: {
+                    body: inputText
+                }
+            }
+            await axiosInstance.post(apiEndPoint, body);
+            return task;
+        } catch (error) {
+            console.error(error.toJSON());
+        }
+    }
 
-       //         const body = {
-         //           user: {
-           //             body: inputText,
-             //           status: task.status//,
-               //         //commit: "Update Task",
-                        //id: task.id
-                 //   }
-                //}
-                //await axiosInstance.delete(`/tasks/${task.id}.json`, body);
-                //return task;
-           // }
-            //return task;
-       // })
-       // setTasks(changeData);
-        //setisRender(!isRender);
-  //  }
 
-    //const onPressAddEdit = () => {
-     //   handleAddTask(editTask);
-      //  setisModalVisible(false);
-   // }
+    const onPressAddEdit = () => {
+        handleAddTask(editTask);
+        setisModalVisible(false);
+    }
 
 
 
@@ -162,7 +164,7 @@ function TaskFeed({ user }) {
                 visible={isModalVisible}
                 onRequestClose={() => setisModalVisible(false)} >
 
-            <View style={styles.modalView}>
+             <View style={styles.modalView}>
                 <Text style={styles.text}>
                     Change Task
                 </Text>
@@ -174,6 +176,7 @@ function TaskFeed({ user }) {
                     multiline={false}
 
                 />
+
                 
                 <TouchableOpacity
                  onPress={() =>onPressSaveEdit()}
@@ -200,17 +203,23 @@ function TaskFeed({ user }) {
 
                 </TouchableOpacity>
 
-            </View>
-
-
+             </View>
             </Modal>
 
 
             <View>
-            <Button
+
+             <TextInput
+                    style={styles.newInput}
+                    onChangeText={(text)=> setinputText(text)}
+                    defaultValue={null}
+                    editable={true}
+                    multiline={false}
+                />
+                <Button
                 title="Create Task"
-     //           onPress={onPressAddEdit()}
-            />
+                //onPress={onPressAddEdit()}
+              />
 
             </View>
 
@@ -228,6 +237,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         paddingHorizontal: 20,
+        paddingVertical: 20,
         borderBottomColor: 'grey',
         borderBottomWidth: 1,
         alignItems: 'center',
@@ -266,6 +276,15 @@ const styles = StyleSheet.create({
     },
     text:{
         fontSize: 25
+    },
+    newInput:{
+        width: '90%',
+        height: 30,
+        borderColor: 'grey',
+        borderWidth: 1,
+        fontSize: 25,
+        marginTop: 12,
+        textAlign: 'center'
     }
 
 })

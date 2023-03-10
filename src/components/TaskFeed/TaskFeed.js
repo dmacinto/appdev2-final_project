@@ -1,9 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity, Modal } from "react-native";
 import { axiosInstance } from "../../utils";
-import CreateTask from "../CreateTask/CreateTask";
 import { TextInput } from "react-native-gesture-handler";
-import SignIn from "../SignIn/SignIn";
 
 
 
@@ -29,7 +27,7 @@ function TaskFeed({ user }) {
     const onPressTask = (task) => {
         setisModalVisible(true);
         setinputText(task.body);
-        seteditTask(task.id)
+        seteditTask(task.id);
     }
 
 
@@ -66,18 +64,11 @@ function TaskFeed({ user }) {
 
                 const body = {
                     user: {
-                        id: task.id,
                         body: inputText,
-                        commenter_id: task.commenter_id,
-                        completed_id: null,
-                        in_progress_id: null,
-                        incomplete_id: null,
-                        status: task.status,
-                        created_at: task.created_at,
-                        updated_at: task.updated_at,
+                        status: task.status
                     }
                 }
-                await axiosInstance.patch(`/tasks/${task.id}/edit.json`, user);
+                await axiosInstance.patch(`/tasks/${task.id}.json`, body);
                 return task;
             }
             return task;
@@ -90,6 +81,67 @@ function TaskFeed({ user }) {
         handleEditTask(editTask);
         setisModalVisible(false);
     }
+
+
+    const handleDeleteTask = (editTask) => {
+        const changeData = tasks.map(async task => {
+            if (task.id == editTask) {
+
+                const body = {
+                    user: {
+                        body: inputText,
+                        status: task.status//,
+                        //commit: "Update Task",
+                        //id: task.id
+                    }
+                }
+                await axiosInstance.delete(`/tasks/${task.id}.json`, body);
+                return task;
+            }
+            return task;
+        })
+        setTasks(changeData);
+        setisRender(!isRender);
+    }
+
+    const onPressDeleteEdit = () => {
+        handleDeleteTask(editTask);
+        setisModalVisible(false);
+    }
+
+
+
+   // const handleAddTask = (editTask) => {
+    //    const changeData = tasks.map(async task => {
+     //       if (task.id == editTask) {
+
+       //         const body = {
+         //           user: {
+           //             body: inputText,
+             //           status: task.status//,
+               //         //commit: "Update Task",
+                        //id: task.id
+                 //   }
+                //}
+                //await axiosInstance.delete(`/tasks/${task.id}.json`, body);
+                //return task;
+           // }
+            //return task;
+       // })
+       // setTasks(changeData);
+        //setisRender(!isRender);
+  //  }
+
+    //const onPressAddEdit = () => {
+     //   handleAddTask(editTask);
+      //  setisModalVisible(false);
+   // }
+
+
+
+
+
+
 
     React.useEffect(() => {
         getFeed()
@@ -131,6 +183,15 @@ function TaskFeed({ user }) {
 
                 </TouchableOpacity>
 
+
+                <TouchableOpacity
+                 onPress={() =>onPressDeleteEdit()}
+                 style={styles.touchableSave}
+                >
+                    <Text style={styles.text}>Delete</Text>
+
+                </TouchableOpacity>
+
                 <TouchableOpacity
                  onPress={() =>setisModalVisible(false)}
                  style={styles.touchableSave}
@@ -145,23 +206,15 @@ function TaskFeed({ user }) {
             </Modal>
 
 
-
+            <View>
             <Button
                 title="Create Task"
-                onPress={CreateTask}
+     //           onPress={onPressAddEdit()}
             />
 
-            <Button
-                title="Delete Task"
-            />
+            </View>
 
-            <Button
-                title="Edit Task"
-            />
 
-            <Button
-                title="Sign Out"
-            />
 
         </View>
     )
@@ -210,7 +263,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         alignItems: 'center',
         marginTop: 20
+    },
+    text:{
+        fontSize: 25
     }
+
 })
 
 

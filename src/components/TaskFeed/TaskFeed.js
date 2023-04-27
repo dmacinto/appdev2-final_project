@@ -115,48 +115,31 @@ function TaskFeed({ user }) {
         setisModalVisible(false);
     }
 
-    const handleDeleteTask = (editTask) => {
-        const changeData = tasks.map(async task => {
-            if (task.id == editTask) {
 
-                const body = {
-                    user: {
-                        body: inputText,
-                        status: task.status
-                    }
-                }
-            
-                await axiosInstance.delete(`/tasks/${task.id}.json`, body);
-                return task;
-            }
-            return task;
-        })
-        setTasks(changeData);
+    const handleDeleteTask = async (editTask) => {
+        await deleteTask(editTask);
         setisRender(!isRender);
     }
 
-
-    async function deleteTask(task) {
-        try{
-            const apiEndPoint =`/tasks/${task.id}.json`;
+    async function deleteTask(taskId) {
+        try {
+            const apiEndPoint = `/tasks/${taskId}.json`;
             const body = {
                 user: {
-                    body: inputText,
-                    status: task.status
-                }
-            }
-            const response = await axiosInstance.delete(apiEndPoint, body);
-            //console.log(response.data)
-            const newTasks = tasks.map(
-                task 
-            )
-            setTasks(newTasks)
-        }
-        catch (error) {
+                    email: user.email,
+                    authentication_token: user.authentication_token,
+                },
+            };
+            await axiosInstance.delete(apiEndPoint, { data: body });
+    
+            const newTasks = tasks.filter((task) => task.id !== taskId);
+            setTasks(newTasks);
+        } catch (error) {
             console.error(error.toJSON());
         }
-    
-    } 
+    }
+
+
 
 
 
